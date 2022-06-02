@@ -4,11 +4,11 @@ public enum OrderStatus {
 
 	WAITING_PAYMENT(1), PAID(2), SHIPPED(3), DELIVERY(4), CANCELED(5);
 
+	private int code;
+
 	private OrderStatus(int code) {
 		this.code = code;
 	}
-
-	private int code;
 
 	public int getCode() {
 		return code;
