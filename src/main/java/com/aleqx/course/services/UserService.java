@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.aleqx.course.entities.User;
 import com.aleqx.course.repositories.UserRepository;
+import com.aleqx.course.services.exceptions.DatabaseException;
 import com.aleqx.course.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -32,11 +35,18 @@ public class UserService {
 
 	// Operacao para deletar do banco de dados
 	public void delete(Long id) {
-		userRepository.deleteById(id);
+		try {
+			userRepository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e.getMessage());
+		}
 	}
 
 	// Operacao para atualizar do banco de dados
 	public User update(Long id, User obj) {
+		@SuppressWarnings("deprecation")
 		User entity = userRepository.getOne(id);
 		updateData(entity,obj);
 		return userRepository.save(entity);
